@@ -186,7 +186,7 @@ namespace Mpv.WPF
 				mpv.SetPropertyString("pause", "no");
 			}
 
-			IsPlaying = false;
+			IsPlaying = true;
 		}
 
 		public void Pause()
@@ -196,7 +196,7 @@ namespace Mpv.WPF
 				mpv.SetPropertyString("pause", "yes");
 			}
 
-			IsPlaying = true;
+			IsPlaying = false;
 		}
 
 		public void Stop()
@@ -215,8 +215,6 @@ namespace Mpv.WPF
 			Position = TimeSpan.Zero;
 
 			Resume();
-
-			IsPlaying = true;
 		}
 
 		public void EnableYouTubeDl(string ytdlHookScriptPath)
