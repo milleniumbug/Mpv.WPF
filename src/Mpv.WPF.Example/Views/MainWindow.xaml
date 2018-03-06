@@ -33,26 +33,26 @@
 			</Grid.ColumnDefinitions>
 
 			<Button
-				IsEnabled="{Binding IsFileLoaded, UpdateSourceTrigger=PropertyChanged}"
+				IsEnabled="{Binding IsMediaLoaded, UpdateSourceTrigger=PropertyChanged}"
 				Content="Play"
 				Click="ButtonPlayOnClick" />
 
 			<Button
 				Grid.Column="1"
-				IsEnabled="{Binding IsFileLoaded, UpdateSourceTrigger=PropertyChanged}"
+				IsEnabled="{Binding IsMediaLoaded, UpdateSourceTrigger=PropertyChanged}"
 				Content="Pause"
 				Click="ButtonPauseOnClick" />
 
 			<Button
 				Grid.Column="2"
-				IsEnabled="{Binding IsFileLoaded, UpdateSourceTrigger=PropertyChanged}"
+				IsEnabled="{Binding IsMediaLoaded, UpdateSourceTrigger=PropertyChanged}"
 				Content="Stop"
 				Click="ButtonStopOnClick" />
 
 			<Slider
 				x:Name="positionSlider"
 				Grid.Column="3"
-				IsEnabled="{Binding IsFileLoaded, UpdateSourceTrigger=PropertyChanged}"
+				IsEnabled="{Binding IsMediaLoaded, UpdateSourceTrigger=PropertyChanged}"
 				Margin="5,0"
 				VerticalAlignment="Center"
 				ToolTip="Position"

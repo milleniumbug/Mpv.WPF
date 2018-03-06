@@ -60,6 +60,7 @@
       <DependentUpon>MpvPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="MpvPlayerHwndHost.cs" />
+    <Compile Include="MpvPlayerLoadMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

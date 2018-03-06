@@ -139,9 +139,9 @@ namespace Mpv.WPF
 
 		private NET.Mpv mpv;
 
-		private YouTubeDlVideoQuality ytdlVideoQuality;
+		private MpvPlayerHwndHost playerHwndHost;
 
-		private readonly MpvPlayerHwndHost playerHwndHost;
+		private YouTubeDlVideoQuality ytdlVideoQuality;
 
 		private bool isYouTubeDlEnabled = false;
 		private bool isSeeking = false;
@@ -162,12 +162,10 @@ namespace Mpv.WPF
 			Volume = 50;
 			YouTubeDlVideoQuality = YouTubeDlVideoQuality.Highest;
 
-			// Create the HwndHost and add it to the user control.
-			playerHwndHost = new MpvPlayerHwndHost(mpv);
-			AddChild(playerHwndHost);
+			SetMpvHost();
 		}
 
-		public void Load(string path)
+		public void Load(string path, MpvPlayerLoadMethod loadMethod = MpvPlayerLoadMethod.AppendPlay)
 		{
 			Guard.AgainstNullOrEmptyOrWhiteSpaceString(path, nameof(path));
 
@@ -175,7 +173,9 @@ namespace Mpv.WPF
 			{
 				mpv.SetPropertyString("pause", AutoPlay ? "no" : "yes");
 
-				mpv.Command("loadfile", path);
+				var loadMethodString = GetStringForLoadMethod(loadMethod);
+
+				mpv.Command("loadfile", path, loadMethodString);
 			}
 		}
 
@@ -236,19 +236,40 @@ namespace Mpv.WPF
 		private void InitialiseMpv(string dllPath)
 		{
 			mpv = new NET.Mpv(dllPath);
+
+			mpv.PlaybackRestart += MpvOnPlaybackRestart;
+			mpv.Seek += MpvOnSeek;
+
 			mpv.FileLoaded += MpvOnFileLoaded;
 			mpv.EndFile += MpvOnEndFile;
-			mpv.PlaybackRestart += MpvOnPlayBackRestart;
-			mpv.Seek += MpvOnSeek;
 
 #if DEBUG
 			mpv.LogMessage += MpvOnLogMessage;
 
 			mpv.RequestLogMessages(MpvLogLevel.Info);
 #endif
+		}
 
-			// Keep the video player open.
-			mpv.SetPropertyString("keep-open", "always");
+		private void SetMpvHost()
+		{
+			// Create the HwndHost and add it to the user control.
+			playerHwndHost = new MpvPlayerHwndHost(mpv);
+			AddChild(playerHwndHost);
+		}
+
+		private void MpvOnPlaybackRestart(object sender, EventArgs e)
+		{
+			if (isSeeking)
+			{
+				MediaEndedSeeking?.Invoke(this, EventArgs.Empty);
+				isSeeking = false;
+			}
+		}
+
+		private void MpvOnSeek(object sender, EventArgs e)
+		{
+			isSeeking = true;
+			MediaStartedSeeking?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void MpvOnFileLoaded(object sender, EventArgs e)
@@ -262,7 +283,7 @@ namespace Mpv.WPF
 
 		private void MpvOnEndFile(object sender, MpvEndFileEventArgs e)
 		{
-			IsMediaLoaded = false; 
+			IsMediaLoaded = false;
 
 			var eventEndFile = e.EventEndFile;
 
@@ -278,21 +299,6 @@ namespace Mpv.WPF
 					MediaError?.Invoke(this, EventArgs.Empty);
 					break;
 			}
-		}
-
-		private void MpvOnPlayBackRestart(object sender, EventArgs e)
-		{
-			if (isSeeking)
-			{
-				MediaEndedSeeking?.Invoke(this, EventArgs.Empty);
-				isSeeking = false;
-			}
-		}
-
-		private void MpvOnSeek(object sender, EventArgs e)
-		{
-			isSeeking = true;
-			MediaStartedSeeking?.Invoke(this, EventArgs.Empty);
 		}
 
 #if DEBUG
@@ -311,6 +317,21 @@ namespace Mpv.WPF
 		{
 			if (!IsMediaLoaded)
 				throw new InvalidOperationException("Operation could not be completed because no media file has been loaded.");
+		}
+
+		private string GetStringForLoadMethod(MpvPlayerLoadMethod loadMethod)
+		{
+			switch (loadMethod)
+			{
+				case MpvPlayerLoadMethod.Replace:
+					return "replace";
+				case MpvPlayerLoadMethod.Append:
+					return "append";
+				case MpvPlayerLoadMethod.AppendPlay:
+					return "append-play";
+				default:
+					throw new ArgumentException("Invalid load method.", nameof(loadMethod));
+			}
 		}
 
 		private void DispatcherOnShutdownStarted(object sender, EventArgs e)
