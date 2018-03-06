@@ -61,7 +61,7 @@ namespace Mpv.WPF.Example
 			player.YouTubeDlVideoQuality = YouTubeDlVideoQuality.MediumHigh;
 
 			player.AutoPlay = true;
-			player.Load(@"https://www.youtube.com/watch?v=gIXJybL8QxY");
+			player.Load(@"URL OR PATH GOES HERE");
 		}
 
 		private void SetupPositionUpdateTimer()

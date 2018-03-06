@@ -4,12 +4,6 @@ namespace Mpv.WPF
 {
 	internal static class Guard
 	{
-		public static void AgainstDisposed(bool disposed, string objectName)
-		{
-			if (disposed)
-				throw new ObjectDisposedException(objectName);
-		}
-
 		public static void AgainstNull(object value, string name)
 		{
 			if (value == null)

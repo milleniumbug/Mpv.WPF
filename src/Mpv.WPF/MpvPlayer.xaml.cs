@@ -39,7 +39,8 @@ namespace Mpv.WPF
 		{
 			get
 			{
-				GuardAgainstNotLoaded();
+				if (!IsMediaLoaded)
+					return false;
 
 				return Position == Duration;
 			}
@@ -49,7 +50,8 @@ namespace Mpv.WPF
 		{
 			get
 			{
-				GuardAgainstNotLoaded();
+				if (!IsMediaLoaded)
+					return TimeSpan.Zero;
 
 				long durationSeconds;
 				lock (mpvLock)
@@ -65,7 +67,8 @@ namespace Mpv.WPF
 		{
 			get
 			{
-				GuardAgainstNotLoaded();
+				if (!IsMediaLoaded)
+					return TimeSpan.Zero;
 
 				long positionSeconds;
 				lock (mpvLock)
@@ -94,7 +97,8 @@ namespace Mpv.WPF
 		{
 			get
 			{
-				GuardAgainstNotLoaded();
+				if (!IsMediaLoaded)
+					return TimeSpan.Zero;
 
 				long remainingSeconds;
 				lock (mpvLock)
@@ -281,7 +285,10 @@ namespace Mpv.WPF
 		private void MpvOnPlayBackRestart(object sender, EventArgs e)
 		{
 			if (isSeeking)
+			{
 				MediaEndedSeeking?.Invoke(this, EventArgs.Empty);
+				isSeeking = false;
+			}
 		}
 
 		private void MpvOnSeek(object sender, EventArgs e)

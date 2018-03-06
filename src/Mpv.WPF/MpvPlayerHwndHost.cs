@@ -14,7 +14,9 @@ namespace Mpv.WPF
 
 		public MpvPlayerHwndHost(NET.Mpv mpv)
 		{
-			this.mpv = mpv ?? throw new ArgumentNullException(nameof(mpv));
+			Guard.AgainstNull(mpv, nameof(mpv));
+
+			this.mpv = mpv;
 		}
 
 		protected override HandleRef BuildWindowCore(HandleRef hwndParent)
