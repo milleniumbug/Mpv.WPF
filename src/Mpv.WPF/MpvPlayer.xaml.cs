@@ -27,6 +27,30 @@ namespace Mpv.WPF
 			}
 		}
 
+		// Playlist related properties
+
+		public int PlaylistEntryCount
+		{
+			get
+			{
+				lock (mpvLock)
+				{
+					return (int)mpv.GetPropertyLong("playlist-count");
+				}
+			}
+		}
+
+		public int PlaylistIndex
+		{
+			get
+			{
+				lock (mpvLock)
+				{
+					return (int)mpv.GetPropertyLong("playlist-pos");
+				}
+			}
+		}
+
 		// Media-related properties
 
 		public bool AutoPlay { get; set; }
@@ -217,6 +241,103 @@ namespace Mpv.WPF
 			Resume();
 		}
 
+		public bool PlaylistNext()
+		{
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-next");
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public bool PlaylistPrevious()
+		{
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-prev");
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public bool PlaylistRemove()
+		{
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-remove", "current");
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public bool PlaylistRemove(int index)
+		{
+			var indexString = index.ToString();
+
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-remove", indexString);
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public bool PlaylistMove(int oldIndex, int newIndex)
+		{
+			var oldIndexString = oldIndex.ToString();
+			var newIndexString = newIndex.ToString();
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-move", oldIndexString, newIndexString);
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public void PlaylistClear()
+		{
+			lock (mpvLock)
+			{
+				mpv.Command("playlist-clear");
+			}
+		}
+
 		public void EnableYouTubeDl(string ytdlHookScriptPath)
 		{
 			if (isYouTubeDlEnabled)
@@ -332,6 +453,14 @@ namespace Mpv.WPF
 				default:
 					throw new ArgumentException("Invalid load method.", nameof(loadMethod));
 			}
+		}
+
+		private static bool HandleCommandMpvException(MpvException exception)
+		{
+			if (exception.Error == MpvError.Command)
+				return false;
+			else
+				throw exception;
 		}
 
 		private void DispatcherOnShutdownStarted(object sender, EventArgs e)

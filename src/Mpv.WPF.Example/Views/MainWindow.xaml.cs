@@ -61,7 +61,7 @@ namespace Mpv.WPF.Example
 			player.YouTubeDlVideoQuality = YouTubeDlVideoQuality.MediumHigh;
 
 			player.AutoPlay = true;
-			player.Load(@"https://www.youtube.com/watch?v=jrVbawRPO7I");
+			player.Load(@"https://www.youtube.com/watch?v=fJ9rUzIMcZQ");
 			player.Load(@"https://www.youtube.com/watch?v=vggNhNiFo5Q");
 		}
 
@@ -103,6 +103,16 @@ namespace Mpv.WPF.Example
 		private void ButtonStopOnClick(object sender, RoutedEventArgs e)
 		{
 			player.Stop();
+		}
+
+		private void BtnPreviousOnClick(object sender, RoutedEventArgs e)
+		{
+			player.PlaylistPrevious();
+		}
+
+		private void BtnNextOnClick(object sender, RoutedEventArgs e)
+		{
+			player.PlaylistNext();
 		}
 
 		private void SliderOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
