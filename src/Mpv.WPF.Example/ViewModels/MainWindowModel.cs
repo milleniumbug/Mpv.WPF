@@ -50,15 +50,15 @@ namespace Mpv.WPF.Example.ViewModels
 			}
 		}
 
-		public bool IsFileLoaded
+		public bool IsMediaLoaded
 		{
-			get => isFileLoaded;
+			get => isMediaLoaded;
 			set
 			{
-				if (value != isFileLoaded)
+				if (value != isMediaLoaded)
 				{
-					isFileLoaded = value;
-					NotifyPropertyChanged(nameof(IsFileLoaded));
+					isMediaLoaded = value;
+					NotifyPropertyChanged(nameof(IsMediaLoaded));
 				}
 			}
 		}
@@ -66,7 +66,7 @@ namespace Mpv.WPF.Example.ViewModels
 		private TimeSpan duration;
 		private TimeSpan position;
 
-		private bool isFileLoaded;
+		private bool isMediaLoaded;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

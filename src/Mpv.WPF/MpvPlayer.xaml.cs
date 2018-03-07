@@ -27,6 +27,30 @@ namespace Mpv.WPF
 			}
 		}
 
+		// Playlist related properties
+
+		public int PlaylistEntryCount
+		{
+			get
+			{
+				lock (mpvLock)
+				{
+					return (int)mpv.GetPropertyLong("playlist-count");
+				}
+			}
+		}
+
+		public int PlaylistIndex
+		{
+			get
+			{
+				lock (mpvLock)
+				{
+					return (int)mpv.GetPropertyLong("playlist-pos");
+				}
+			}
+		}
+
 		// Media-related properties
 
 		public bool AutoPlay { get; set; }
@@ -39,7 +63,8 @@ namespace Mpv.WPF
 		{
 			get
 			{
-				GuardAgainstNotLoaded();
+				if (!IsMediaLoaded)
+					return false;
 
 				return Position == Duration;
 			}
@@ -49,7 +74,8 @@ namespace Mpv.WPF
 		{
 			get
 			{
-				GuardAgainstNotLoaded();
+				if (!IsMediaLoaded)
+					return TimeSpan.Zero;
 
 				long durationSeconds;
 				lock (mpvLock)
@@ -65,7 +91,8 @@ namespace Mpv.WPF
 		{
 			get
 			{
-				GuardAgainstNotLoaded();
+				if (!IsMediaLoaded)
+					return TimeSpan.Zero;
 
 				long positionSeconds;
 				lock (mpvLock)
@@ -94,7 +121,8 @@ namespace Mpv.WPF
 		{
 			get
 			{
-				GuardAgainstNotLoaded();
+				if (!IsMediaLoaded)
+					return TimeSpan.Zero;
 
 				long remainingSeconds;
 				lock (mpvLock)
@@ -135,9 +163,9 @@ namespace Mpv.WPF
 
 		private NET.Mpv mpv;
 
-		private YouTubeDlVideoQuality ytdlVideoQuality;
+		private MpvPlayerHwndHost playerHwndHost;
 
-		private readonly MpvPlayerHwndHost playerHwndHost;
+		private YouTubeDlVideoQuality ytdlVideoQuality;
 
 		private bool isYouTubeDlEnabled = false;
 		private bool isSeeking = false;
@@ -158,12 +186,10 @@ namespace Mpv.WPF
 			Volume = 50;
 			YouTubeDlVideoQuality = YouTubeDlVideoQuality.Highest;
 
-			// Create the HwndHost and add it to the user control.
-			playerHwndHost = new MpvPlayerHwndHost(mpv);
-			AddChild(playerHwndHost);
+			SetMpvHost();
 		}
 
-		public void Load(string path)
+		public void Load(string path, MpvPlayerLoadMethod loadMethod = MpvPlayerLoadMethod.AppendPlay)
 		{
 			Guard.AgainstNullOrEmptyOrWhiteSpaceString(path, nameof(path));
 
@@ -171,7 +197,9 @@ namespace Mpv.WPF
 			{
 				mpv.SetPropertyString("pause", AutoPlay ? "no" : "yes");
 
-				mpv.Command("loadfile", path);
+				var loadMethodString = GetStringForLoadMethod(loadMethod);
+
+				mpv.Command("loadfile", path, loadMethodString);
 			}
 		}
 
@@ -182,7 +210,7 @@ namespace Mpv.WPF
 				mpv.SetPropertyString("pause", "no");
 			}
 
-			IsPlaying = false;
+			IsPlaying = true;
 		}
 
 		public void Pause()
@@ -192,7 +220,7 @@ namespace Mpv.WPF
 				mpv.SetPropertyString("pause", "yes");
 			}
 
-			IsPlaying = true;
+			IsPlaying = false;
 		}
 
 		public void Stop()
@@ -211,8 +239,103 @@ namespace Mpv.WPF
 			Position = TimeSpan.Zero;
 
 			Resume();
+		}
 
-			IsPlaying = true;
+		public bool PlaylistNext()
+		{
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-next");
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public bool PlaylistPrevious()
+		{
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-prev");
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public bool PlaylistRemove()
+		{
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-remove", "current");
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public bool PlaylistRemove(int index)
+		{
+			var indexString = index.ToString();
+
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-remove", indexString);
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public bool PlaylistMove(int oldIndex, int newIndex)
+		{
+			var oldIndexString = oldIndex.ToString();
+			var newIndexString = newIndex.ToString();
+			try
+			{
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-move", oldIndexString, newIndexString);
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
+			}
+		}
+
+		public void PlaylistClear()
+		{
+			lock (mpvLock)
+			{
+				mpv.Command("playlist-clear");
+			}
 		}
 
 		public void EnableYouTubeDl(string ytdlHookScriptPath)
@@ -234,19 +357,40 @@ namespace Mpv.WPF
 		private void InitialiseMpv(string dllPath)
 		{
 			mpv = new NET.Mpv(dllPath);
+
+			mpv.PlaybackRestart += MpvOnPlaybackRestart;
+			mpv.Seek += MpvOnSeek;
+
 			mpv.FileLoaded += MpvOnFileLoaded;
 			mpv.EndFile += MpvOnEndFile;
-			mpv.PlaybackRestart += MpvOnPlayBackRestart;
-			mpv.Seek += MpvOnSeek;
 
 #if DEBUG
 			mpv.LogMessage += MpvOnLogMessage;
 
 			mpv.RequestLogMessages(MpvLogLevel.Info);
 #endif
+		}
 
-			// Keep the video player open.
-			mpv.SetPropertyString("keep-open", "always");
+		private void SetMpvHost()
+		{
+			// Create the HwndHost and add it to the user control.
+			playerHwndHost = new MpvPlayerHwndHost(mpv);
+			AddChild(playerHwndHost);
+		}
+
+		private void MpvOnPlaybackRestart(object sender, EventArgs e)
+		{
+			if (isSeeking)
+			{
+				MediaEndedSeeking?.Invoke(this, EventArgs.Empty);
+				isSeeking = false;
+			}
+		}
+
+		private void MpvOnSeek(object sender, EventArgs e)
+		{
+			isSeeking = true;
+			MediaStartedSeeking?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void MpvOnFileLoaded(object sender, EventArgs e)
@@ -260,7 +404,7 @@ namespace Mpv.WPF
 
 		private void MpvOnEndFile(object sender, MpvEndFileEventArgs e)
 		{
-			IsMediaLoaded = false; 
+			IsMediaLoaded = false;
 
 			var eventEndFile = e.EventEndFile;
 
@@ -276,18 +420,6 @@ namespace Mpv.WPF
 					MediaError?.Invoke(this, EventArgs.Empty);
 					break;
 			}
-		}
-
-		private void MpvOnPlayBackRestart(object sender, EventArgs e)
-		{
-			if (isSeeking)
-				MediaEndedSeeking?.Invoke(this, EventArgs.Empty);
-		}
-
-		private void MpvOnSeek(object sender, EventArgs e)
-		{
-			isSeeking = true;
-			MediaStartedSeeking?.Invoke(this, EventArgs.Empty);
 		}
 
 #if DEBUG
@@ -306,6 +438,29 @@ namespace Mpv.WPF
 		{
 			if (!IsMediaLoaded)
 				throw new InvalidOperationException("Operation could not be completed because no media file has been loaded.");
+		}
+
+		private string GetStringForLoadMethod(MpvPlayerLoadMethod loadMethod)
+		{
+			switch (loadMethod)
+			{
+				case MpvPlayerLoadMethod.Replace:
+					return "replace";
+				case MpvPlayerLoadMethod.Append:
+					return "append";
+				case MpvPlayerLoadMethod.AppendPlay:
+					return "append-play";
+				default:
+					throw new ArgumentException("Invalid load method.", nameof(loadMethod));
+			}
+		}
+
+		private static bool HandleCommandMpvException(MpvException exception)
+		{
+			if (exception.Error == MpvError.Command)
+				return false;
+			else
+				throw exception;
 		}
 
 		private void DispatcherOnShutdownStarted(object sender, EventArgs e)

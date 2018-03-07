@@ -23,8 +23,12 @@
 
 		<Grid x:Name="playerHost" />
 
-		<Grid Grid.Row="1">
+		<Grid
+			Grid.Row="1"
+			IsEnabled="{Binding IsMediaLoaded, UpdateSourceTrigger=PropertyChanged}">
 			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="50" />
+				<ColumnDefinition Width="50" />
 				<ColumnDefinition Width="50" />
 				<ColumnDefinition Width="50" />
 				<ColumnDefinition Width="50" />
@@ -33,26 +37,32 @@
 			</Grid.ColumnDefinitions>
 
 			<Button
-				IsEnabled="{Binding IsFileLoaded, UpdateSourceTrigger=PropertyChanged}"
 				Content="Play"
 				Click="ButtonPlayOnClick" />
 
 			<Button
 				Grid.Column="1"
-				IsEnabled="{Binding IsFileLoaded, UpdateSourceTrigger=PropertyChanged}"
 				Content="Pause"
 				Click="ButtonPauseOnClick" />
 
 			<Button
 				Grid.Column="2"
-				IsEnabled="{Binding IsFileLoaded, UpdateSourceTrigger=PropertyChanged}"
 				Content="Stop"
 				Click="ButtonStopOnClick" />
 
+			<Button
+				Grid.Column="3"
+				Content="Previous"
+				Click="BtnPreviousOnClick" />
+
+			<Button
+				Grid.Column="4"
+				Content="Next"
+				Click="BtnNextOnClick" />
+
 			<Slider
 				x:Name="positionSlider"
-				Grid.Column="3"
-				IsEnabled="{Binding IsFileLoaded, UpdateSourceTrigger=PropertyChanged}"
+				Grid.Column="5"
 				Margin="5,0"
 				VerticalAlignment="Center"
 				ToolTip="Position"
@@ -65,7 +75,7 @@
 				IsSnapToTickEnabled="True" />
 
 			<Slider
-				Grid.Column="4"
+				Grid.Column="6"
 				Margin="5,0"
 				VerticalAlignment="Center"
 				ToolTip="Volume"

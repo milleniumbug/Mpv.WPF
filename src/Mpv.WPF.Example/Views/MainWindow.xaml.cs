@@ -61,7 +61,8 @@ namespace Mpv.WPF.Example
 			player.YouTubeDlVideoQuality = YouTubeDlVideoQuality.MediumHigh;
 
 			player.AutoPlay = true;
-			player.Load(@"https://www.youtube.com/watch?v=gIXJybL8QxY");
+			player.Load(@"https://www.youtube.com/watch?v=fJ9rUzIMcZQ");
+			player.Load(@"https://www.youtube.com/watch?v=vggNhNiFo5Q");
 		}
 
 		private void SetupPositionUpdateTimer()
@@ -76,12 +77,12 @@ namespace Mpv.WPF.Example
 
 		private void PlayerOnFileUnloaded(object sender, EventArgs e)
 		{
-			model.IsFileLoaded = false;
+			model.IsMediaLoaded = false;
 		}
 
 		private void PlayerOnFileLoaded(object sender, EventArgs e)
 		{
-			model.IsFileLoaded = true;
+			model.IsMediaLoaded = true;
 
 			model.Duration = player.Duration;
 		}
@@ -104,6 +105,16 @@ namespace Mpv.WPF.Example
 			player.Stop();
 		}
 
+		private void BtnPreviousOnClick(object sender, RoutedEventArgs e)
+		{
+			player.PlaylistPrevious();
+		}
+
+		private void BtnNextOnClick(object sender, RoutedEventArgs e)
+		{
+			player.PlaylistNext();
+		}
+
 		private void SliderOnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
 		{
 			if (IsLoaded)
@@ -116,7 +127,7 @@ namespace Mpv.WPF.Example
 
 		private void PositionUpdateTimerOnTick(object sender, EventArgs e)
 		{
-			if (!isMovingPositionSlider && model.IsFileLoaded)
+			if (!isMovingPositionSlider && model.IsMediaLoaded)
 				positionSlider.Value = player.Position.TotalSeconds;
 		}
 
