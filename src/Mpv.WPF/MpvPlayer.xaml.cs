@@ -292,41 +292,33 @@ namespace Mpv.WPF
 			}
 		}
 
-		public bool PlaylistRemove(int index)
+		public void PlaylistRemove(int index)
 		{
+			if (index < 0 || index > PlaylistEntryCount - 1)
+				throw new IndexOutOfRangeException();
+
 			var indexString = index.ToString();
 
-			try
+			lock (mpvLock)
 			{
-				lock (mpvLock)
-				{
-					mpv.Command("playlist-remove", indexString);
-				}
-
-				return true;
-			}
-			catch (MpvException exception)
-			{
-				return HandleCommandMpvException(exception);
+				mpv.Command("playlist-remove", indexString);
 			}
 		}
 
-		public bool PlaylistMove(int oldIndex, int newIndex)
+		public void PlaylistMove(int oldIndex, int newIndex)
 		{
+			var zeroBasedPlaylistEntryCount = PlaylistEntryCount - 1;
+
+			if (oldIndex < 0 || oldIndex > zeroBasedPlaylistEntryCount
+			 || newIndex < 0 || newIndex > zeroBasedPlaylistEntryCount)
+				throw new IndexOutOfRangeException();
+
 			var oldIndexString = oldIndex.ToString();
 			var newIndexString = newIndex.ToString();
-			try
-			{
-				lock (mpvLock)
-				{
-					mpv.Command("playlist-move", oldIndexString, newIndexString);
-				}
 
-				return true;
-			}
-			catch (MpvException exception)
+			lock (mpvLock)
 			{
-				return HandleCommandMpvException(exception);
+				mpv.Command("playlist-move", oldIndexString, newIndexString);
 			}
 		}
 
