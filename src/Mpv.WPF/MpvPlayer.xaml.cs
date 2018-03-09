@@ -330,6 +330,14 @@ namespace Mpv.WPF
 			}
 		}
 
+		public void PlaylistShuffle()
+		{
+			lock (mpvLock)
+			{
+				mpv.Command("playlist-shuffle");
+			}
+		}
+
 		public void EnableYouTubeDl(string ytdlHookScriptPath)
 		{
 			if (isYouTubeDlEnabled)
