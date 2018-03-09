@@ -1,7 +1,14 @@
-
 # Mpv<span />.WPF
 
 WPF user control to easily play video. Powered by [mpv](https://github.com/mpv-player/mpv).
+
+### Features
+
+* Simple setup
+* Auto play
+* Playlist - Load, Next, Previous Move, Remove, Shuffle or Clear
+* Optional youtube-dl support to play videos from hundreds of video sites.
+	* Change the desired video quality.
 
 #### Notes:
 
@@ -24,7 +31,7 @@ See Mpv<span />.NET documentation [here](https://github.com/hudec117/Mpv.NET#pre
 
 MpvPlayer is the user control that contains the mpv video player. It does not contain any other controls.
 
-The MpvPlayer cannot be created declared in XAML since it requires to be instantiated with the path to the libmpv DLL.
+The MpvPlayer cannot be declared in XAML since it needs to be instantiated with the path to the libmpv DLL.
 
 To instantiate MpvPlayer:
 
@@ -37,7 +44,7 @@ private const string libMpvPath = @"lib\mpv-1.dll";
 player = new MpvPlayer(libMpvPath);
 
 // Add the player as a child to
-// an element.
+// a WPF element. (E.g. grid)
 playerHost.Children.Add(player);
 ```
 
@@ -45,23 +52,35 @@ See [Mpv.WPF.Example](https://github.com/hudec117/Mpv.WPF/tree/master/src/Mpv.WP
 
 ### Enabling youtube-dl
 
-To enable youtube-dl there are a few more steps to take.
+youtube-dl is a program that allows you to download videos from YouTube and about another thousand video sites. This program can work in conjunction with mpv to allow you to stream videos on the MpvPlayer.
 
-1. Download youtube-dl from https://mpv.srsfckn.biz/.
+To enable youtube-dl follow these steps:
+
+1. Download youtube-dl from https://mpv.srsfckn.biz/ or https://rg3.github.io/youtube-dl/download.html.
 2. Place "youtube-dl.exe" into the same folder as "mpv-1.dll".
-3. Like when you installed "mpv-1.dll", include "youtube-dl.exe" in your project and set it to copy to output directory.
+3. Like when you installed libmpv, include "youtube-dl.exe" in your project and set it to copy to output directory.
 4. Download [ytdl_hook.lua](https://github.com/mpv-player/mpv/blob/master/player/lua/ytdl_hook.lua) from the mpv repository. 
 5. Place "ytdl_hook.lua" into your project, into a "scripts" folder if you like. 
 6. As previously, include "ytdl_hook.lua" in your project and set it to copy to output directory.
-7. Open the script and change the value of "try_ytdl_first" (On line 7) to true. 
-8. Change the value of "path" (On line 13) to the relative path from your executable to your "youtube-dl.exe".
-9. Lastly, you will need to execute `player.EnableYouTubeDl` along with a relative path to the "ytdl_hook.lua" script which will load the script into mpv.
+7. Open the script and make the following changes: 
+	a. Change the value of "try_ytdl_first" to true. (Line 7)
+	```lua
+	try_ytdl_first = true,
+	```
+    b. Change the value of "path" to the relative path from your executable to your "youtube-dl.exe". (Line 13)
+    ```lua
+	path = "lib\\youtube-dl.exe",
+	```
+8. Lastly, you will need to enable youtube-dl using the player like so:
+	```csharp
+	const string ytdlHookPath = @"scripts\ytdl_hoook.lua";
+
+	player.EnableYouTubeDl(ytdlHookPath);
+	```
 10. Done!
 
 Notes:
-* The "ytdl_hook.lua" script allows youtube-dl to see when mpv attempts to load a file, which could possibly be a web link.
-* Make sure to escape paths! (E.g. "lib\\\\youtube-dl.exe" instead of "lib\youtube-dl.exe")
-* You can set the video quality that youtube-dl should try and retrieve by modifying the YouTubeDlQuality property on a player object.
+* In "ytdl_hook.lua" make sure to escape the path! (E.g. "lib\\\\youtube-dl.exe" instead of "lib\youtube-dl.exe")
 
 ## Related Projects
 
