@@ -64,13 +64,13 @@ To enable youtube-dl follow these steps:
 6. As previously, include "ytdl_hook.lua" in your project and set it to copy to output directory.
 7. Open the script and make the following changes: 
     1. Change the value of "try_ytdl_first" to true. (Line 7)
-    ```lua
-    try_ytdl_first = true,
-    ```
+        ```lua
+        try_ytdl_first = true,
+        ```
     2. Change the value of "path" to the relative path from your executable to your "youtube-dl.exe". (Line 13)
-    ```lua
-    path = "lib\\youtube-dl.exe",
-    ```
+        ```lua
+        path = "lib\\youtube-dl.exe",
+        ```
 8. Lastly, you will need to enable youtube-dl using the player like so:
     ```csharp
     const string ytdlHookPath = @"scripts\ytdl_hoook.lua";
