@@ -1,6 +1,7 @@
 ﻿using Mpv.NET;
 using Mpv.WPF.YouTubeDl;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Controls;
 
@@ -12,7 +13,7 @@ namespace Mpv.WPF
 	public partial class MpvPlayer : UserControl
 	{
 		/// <summary>
-		/// Instance of the underlying mpv API.
+		/// An instance of the underlying mpv API. Do not touch unless you know what you're doing.
 		/// </summary>
 		public NET.Mpv API => mpv;
 
@@ -328,7 +329,7 @@ namespace Mpv.WPF
 		/// <summary>
 		/// Remove the current entry from the playlist.
 		/// </summary>
-		/// <returns>True if successful, false if not.</returns>
+		/// <returns>True if removed, false if not.</returns>
 		public bool PlaylistRemove()
 		{
 			try
@@ -370,6 +371,12 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Moves the playlist entry at oldIndex to newIndex. This does not swap the entries.
+		/// </summary>
+		/// <param name="oldIndex">Index of the entry you want to move.</param>
+		/// <param name="newIndex">Index of where you want to move the entry.</param>
+		/// <returns>True if moved, false if not.</returns>
 		public bool PlaylistMove(int oldIndex, int newIndex)
 		{
 			var oldIndexString = oldIndex.ToString();
@@ -389,6 +396,9 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Clear the playlist of all entries,
+		/// </summary>
 		public void PlaylistClear()
 		{
 			lock (mpvLock)
@@ -397,6 +407,10 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Enable youtube-dl functionality in mpv.
+		/// </summary>
+		/// <param name="ytdlHookScriptPath">Relative or absolute path to the "ytdl_hook.lua" script.</param>
 		public void EnableYouTubeDl(string ytdlHookScriptPath)
 		{
 			if (isYouTubeDlEnabled)
@@ -406,7 +420,6 @@ namespace Mpv.WPF
 
 			lock (mpvLock)
 			{
-				// Load youtube-dl hook script.
 				mpv.Command("load-script", ytdlHookScriptPath);
 			}
 

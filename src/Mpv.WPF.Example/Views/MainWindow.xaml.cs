@@ -90,9 +90,6 @@ namespace Mpv.WPF.Example
 
 		private void ButtonPlayOnClick(object sender, RoutedEventArgs e)
 		{
-			if (player.IsFinished)
-				player.Restart();
-
 			player.Resume();
 		}
 
