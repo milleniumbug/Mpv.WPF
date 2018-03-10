@@ -1,16 +1,24 @@
 ﻿using Mpv.NET;
 using Mpv.WPF.YouTubeDl;
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Controls;
 
 namespace Mpv.WPF
 {
+	/// <summary>
+	/// User control containing an mpv player.
+	/// </summary>
 	public partial class MpvPlayer : UserControl
 	{
+		/// <summary>
+		/// Instance of the underlying mpv API.
+		/// </summary>
 		public NET.Mpv API => mpv;
 
+		/// <summary>
+		/// The desired video quality to retrieve when loading streams from video sites.
+		/// </summary>
 		public YouTubeDlVideoQuality YouTubeDlVideoQuality
 		{
 			get => ytdlVideoQuality;
@@ -27,8 +35,9 @@ namespace Mpv.WPF
 			}
 		}
 
-		// Playlist related properties
-
+		/// <summary>
+		/// Number of entries in the playlist.
+		/// </summary>
 		public int PlaylistEntryCount
 		{
 			get
@@ -40,6 +49,9 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Index of the current entry in the playlist. (zero based)
+		/// </summary>
 		public int PlaylistIndex
 		{
 			get
@@ -51,25 +63,24 @@ namespace Mpv.WPF
 			}
 		}
 
-		// Media-related properties
-
+		/// <summary>
+		/// If true, when media is loaded it will automatically play.
+		/// </summary>
 		public bool AutoPlay { get; set; }
 
+		/// <summary>
+		/// True when media is loaded and ready for playback.
+		/// </summary>
 		public bool IsMediaLoaded { get; private set; }
 
+		/// <summary>
+		/// True if media is playing.
+		/// </summary>
 		public bool IsPlaying { get; private set; }
 
-		public bool IsFinished
-		{
-			get
-			{
-				if (!IsMediaLoaded)
-					return false;
-
-				return Position == Duration;
-			}
-		}
-
+		/// <summary>
+		/// Duration of the media file. (As indicated by metadata)
+		/// </summary>
 		public TimeSpan Duration
 		{
 			get
@@ -87,6 +98,9 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Time since the beginning of the media file.
+		/// </summary>
 		public TimeSpan Position
 		{
 			get
@@ -117,6 +131,9 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Time left of playback in the media file.
+		/// </summary>
 		public TimeSpan Remaining
 		{
 			get
@@ -134,6 +151,9 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Volume of the current media file. Ranging from 0 to 100 inclusive.
+		/// </summary>
 		public int Volume
 		{
 			get
@@ -172,6 +192,10 @@ namespace Mpv.WPF
 
 		private readonly object mpvLock = new object();
 
+		/// <summary>
+		/// Creates an instance of MpvPlayer using a specific libmpv DLL.
+		/// </summary>
+		/// <param name="dllPath">Relative or absolute path to the libmpv DLL.</param>
 		public MpvPlayer(string dllPath)
 		{
 			Guard.AgainstNullOrEmptyOrWhiteSpaceString(dllPath, nameof(dllPath));
@@ -189,6 +213,12 @@ namespace Mpv.WPF
 			SetMpvHost();
 		}
 
+		/// <summary>
+		/// Loads the file at the path into mpv.
+		/// If youtube-dl is enabled, this method can be used to load videos from video sites.
+		/// </summary>
+		/// <param name="path">Path or URL to a media file.</param>
+		/// <param name="loadMethod">The way in which the given media file should be loaded.</param>
 		public void Load(string path, MpvPlayerLoadMethod loadMethod = MpvPlayerLoadMethod.AppendPlay)
 		{
 			Guard.AgainstNullOrEmptyOrWhiteSpaceString(path, nameof(path));
@@ -203,6 +233,9 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Resume playback.
+		/// </summary>
 		public void Resume()
 		{
 			lock (mpvLock)
@@ -213,6 +246,9 @@ namespace Mpv.WPF
 			IsPlaying = true;
 		}
 
+		/// <summary>
+		/// Pause playback.
+		/// </summary>
 		public void Pause()
 		{
 			lock (mpvLock)
@@ -223,6 +259,9 @@ namespace Mpv.WPF
 			IsPlaying = false;
 		}
 
+		/// <summary>
+		/// Stop playback and unload the media file.
+		/// </summary>
 		public void Stop()
 		{
 			lock (mpvLock)
@@ -234,6 +273,9 @@ namespace Mpv.WPF
 			IsPlaying = false;
 		}
 
+		/// <summary>
+		/// Goes to the start of the media file and resumes playback.
+		/// </summary>
 		public void Restart()
 		{
 			Position = TimeSpan.Zero;
@@ -241,6 +283,10 @@ namespace Mpv.WPF
 			Resume();
 		}
 
+		/// <summary>
+		/// Go to the next entry in the playlist.
+		/// </summary>
+		/// <returns>True if successful, false if not. False indicates that there are no entries after the current entry.</returns>
 		public bool PlaylistNext()
 		{
 			try
@@ -258,6 +304,10 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Go to the previous entry in the playlist.
+		/// </summary>
+		/// <returns>True if successful, false if not. False indicates that there are no entries before the current entry.</returns>
 		public bool PlaylistPrevious()
 		{
 			try
@@ -275,6 +325,10 @@ namespace Mpv.WPF
 			}
 		}
 
+		/// <summary>
+		/// Remove the current entry from the playlist.
+		/// </summary>
+		/// <returns>True if successful, false if not.</returns>
 		public bool PlaylistRemove()
 		{
 			try
@@ -292,33 +346,46 @@ namespace Mpv.WPF
 			}
 		}
 
-		public void PlaylistRemove(int index)
+		/// <summary>
+		/// Removes a specific entry in the playlist, indicated by an index.
+		/// </summary>
+		/// <param name="index">Zero based index to an entry in the playlist.</param>
+		/// <returns>True if removed, false if not.</returns>
+		public bool PlaylistRemove(int index)
 		{
-			if (index < 0 || index > PlaylistEntryCount - 1)
-				throw new IndexOutOfRangeException();
-
 			var indexString = index.ToString();
 
-			lock (mpvLock)
+			try
 			{
-				mpv.Command("playlist-remove", indexString);
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-remove", indexString);
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
 			}
 		}
 
-		public void PlaylistMove(int oldIndex, int newIndex)
+		public bool PlaylistMove(int oldIndex, int newIndex)
 		{
-			var zeroBasedPlaylistEntryCount = PlaylistEntryCount - 1;
-
-			if (oldIndex < 0 || oldIndex > zeroBasedPlaylistEntryCount
-			 || newIndex < 0 || newIndex > zeroBasedPlaylistEntryCount)
-				throw new IndexOutOfRangeException();
-
 			var oldIndexString = oldIndex.ToString();
 			var newIndexString = newIndex.ToString();
-
-			lock (mpvLock)
+			try
 			{
-				mpv.Command("playlist-move", oldIndexString, newIndexString);
+				lock (mpvLock)
+				{
+					mpv.Command("playlist-move", oldIndexString, newIndexString);
+				}
+
+				return true;
+			}
+			catch (MpvException exception)
+			{
+				return HandleCommandMpvException(exception);
 			}
 		}
 
@@ -327,14 +394,6 @@ namespace Mpv.WPF
 			lock (mpvLock)
 			{
 				mpv.Command("playlist-clear");
-			}
-		}
-
-		public void PlaylistShuffle()
-		{
-			lock (mpvLock)
-			{
-				mpv.Command("playlist-shuffle");
 			}
 		}
 
