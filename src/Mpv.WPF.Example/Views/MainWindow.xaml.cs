@@ -61,8 +61,9 @@ namespace Mpv.WPF.Example
 			player.YouTubeDlVideoQuality = YouTubeDlVideoQuality.MediumHigh;
 
 			player.AutoPlay = true;
-			player.Load(@"https://www.youtube.com/watch?v=fJ9rUzIMcZQ");
-			player.Load(@"https://www.youtube.com/watch?v=vggNhNiFo5Q");
+
+			player.Load(@"https://www.youtube.com/watch?v=E5ln4uR4TwQ");
+			player.Load(@"https://www.youtube.com/watch?v=SNoK5pyK73c");
 		}
 
 		private void SetupPositionUpdateTimer()
@@ -89,9 +90,6 @@ namespace Mpv.WPF.Example
 
 		private void ButtonPlayOnClick(object sender, RoutedEventArgs e)
 		{
-			if (player.IsFinished)
-				player.Restart();
-
 			player.Resume();
 		}
 
