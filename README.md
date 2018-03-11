@@ -10,10 +10,9 @@ WPF user control to easily play video. Powered by [mpv](https://github.com/mpv-p
 * Optional youtube-dl support to play videos from hundreds of video sites.
 	* Change the desired video quality.
 
-#### Notes:
+#### Note:
 
 * This software is not yet ready to be used in a production environment.
-* No documentation has yet been written.
 
 If you encounter any bugs or would like to see a feature added then please open an issue. Contributions are very welcome!
 
