@@ -42,15 +42,18 @@ To instantiate MpvPlayer:
 private MpvPlayer player;
 private const string libMpvPath = @"lib\mpv-1.dll";
 
-// Constructor/Initialisation
-player = new MpvPlayer(libMpvPath);
+public MyWPFWindow()
+{
+    // Create the user control.
+    player = new MpvPlayer(libMpvPath);
 
-// Add the player as a child to
-// a WPF element. (E.g. grid)
-playerHost.Children.Add(player);
+    // Add the player as a child to
+    // a WPF element. (E.g. grid)
+    playerHost.Children.Add(player);
+}
 ```
 
-See [Mpv.WPF.Example](https://github.com/hudec117/Mpv.WPF/tree/master/src/Mpv.WPF.Example) in the source code.
+See [Mpv.WPF.Example](https://github.com/hudec117/Mpv.WPF/tree/master/src/Mpv.WPF.Example) for a full example.
 
 ### Enabling youtube-dl
 
@@ -60,7 +63,7 @@ To enable youtube-dl follow these steps:
 
 1. Download youtube-dl from https://mpv.srsfckn.biz/ or https://rg3.github.io/youtube-dl/download.html.
 2. Place "youtube-dl.exe" into the same folder as "mpv-1.dll".
-3. Like when you installed libmpv, include "youtube-dl.exe" in your project and set it to copy to output directory.
+3. Like when you installed libmpv, include "youtube-dl.exe" in your project and set it to always copy to output directory.
 4. Download [ytdl_hook.lua](https://github.com/mpv-player/mpv/blob/master/player/lua/ytdl_hook.lua) from the mpv repository. 
 5. Place "ytdl_hook.lua" into your project, into a "scripts" folder if you like. 
 6. As previously, include "ytdl_hook.lua" in your project and set it to copy to output directory.
@@ -73,16 +76,13 @@ To enable youtube-dl follow these steps:
         ```lua
         path = "lib\\youtube-dl.exe",
         ```
-8. Lastly, you will need to enable youtube-dl using the player like so:
+8. Lastly, you will need to enable youtube-dl like so:
     ```csharp
-    const string ytdlHookPath = @"scripts\ytdl_hoook.lua";
+    const string ytdlHookPath = @"scripts\ytdl_hook.lua";
 
     player.EnableYouTubeDl(ytdlHookPath);
     ```
 10. Done!
-
-Notes:
-* In "ytdl_hook.lua" make sure to escape the path! (E.g. "lib\\\\youtube-dl.exe" instead of "lib\youtube-dl.exe")
 
 ## Related Projects
 
