@@ -1,9 +1,9 @@
 # Mpv<span />.WPF
 
-WPF user control to easily play video. Powered by [mpv](https://github.com/mpv-player/mpv).
-
 [![Version](https://img.shields.io/nuget/v/Mpv.WPF.svg?style=flat-square)](https://www.nuget.org/packages/Mpv.WPF/)
 [![Downloads](https://img.shields.io/nuget/dt/Mpv.WPF.svg?style=flat-square)](https://www.nuget.org/packages/Mpv.WPF/)
+
+WPF user control to easily play video. Powered by [mpv](https://github.com/mpv-player/mpv).
 
 ### Features
 
