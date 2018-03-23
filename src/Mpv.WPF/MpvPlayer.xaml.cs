@@ -1,8 +1,11 @@
 ﻿using Mpv.NET;
 using Mpv.WPF.YouTubeDl;
 using System;
+#if DEBUG
 using System.Diagnostics;
+#endif
 using System.Globalization;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Mpv.WPF
@@ -12,10 +15,25 @@ namespace Mpv.WPF
 	/// </summary>
 	public partial class MpvPlayer : UserControl
 	{
+		public static readonly DependencyProperty LibMpvPathProperty = DependencyProperty.Register(
+			"LibMpvPath",
+			typeof(string),
+			typeof(MpvPlayer),
+			new PropertyMetadata("lib\\mpv-1.dll"));
+
 		/// <summary>
 		/// An instance of the underlying mpv API. Do not touch unless you know what you're doing.
 		/// </summary>
 		public NET.Mpv API => mpv;
+
+		/// <summary>
+		/// Absolute or relative (to your executable) path to the libmpv DLL.
+		/// </summary>
+		public string LibMpvPath
+		{
+			get => (string)GetValue(LibMpvPathProperty);
+			set => SetValue(LibMpvPathProperty, value);
+		}
 
 		/// <summary>
 		/// The desired video quality to retrieve when loading streams from video sites.
@@ -176,6 +194,8 @@ namespace Mpv.WPF
 			}
 		}
 
+		public event EventHandler Ready;
+
 		public event EventHandler MediaLoaded;
 		public event EventHandler MediaUnloaded;
 		public event EventHandler MediaError;
@@ -194,24 +214,45 @@ namespace Mpv.WPF
 		private readonly object mpvLock = new object();
 
 		/// <summary>
+		/// Creates an instance of MpvPlayer, loading the DLL pointed to by LibMpvPath.
+		/// </summary>
+		public MpvPlayer()
+		{
+			InitializeComponent();
+		}
+
+		/// <summary>
 		/// Creates an instance of MpvPlayer using a specific libmpv DLL.
 		/// </summary>
-		/// <param name="dllPath">Relative or absolute path to the libmpv DLL.</param>
-		public MpvPlayer(string dllPath)
+		/// <param name="libMpvPath">Relative or absolute path to the libmpv DLL.</param>
+		public MpvPlayer(string libMpvPath)
 		{
-			Guard.AgainstNullOrEmptyOrWhiteSpaceString(dllPath, nameof(dllPath));
-
 			InitializeComponent();
 
+			LibMpvPath = libMpvPath;
+		}
+
+		private void UserControlOnLoaded(object sender, RoutedEventArgs e)
+		{
+			Initialise();
+		}
+
+		private void Initialise()
+		{
+			// Watch out for shutdown to dispose the API.
 			Dispatcher.ShutdownStarted += DispatcherOnShutdownStarted;
 
-			InitialiseMpv(dllPath);
+			// Initialise the API.
+			InitialiseMpv(LibMpvPath);
 
 			// Set defaults.
 			Volume = 50;
 			YouTubeDlVideoQuality = YouTubeDlVideoQuality.Highest;
 
+			// Set the host of the mpv player.
 			SetMpvHost();
+
+			Ready?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -426,9 +467,9 @@ namespace Mpv.WPF
 			isYouTubeDlEnabled = true;
 		}
 
-		private void InitialiseMpv(string dllPath)
+		private void InitialiseMpv(string libMpvPath)
 		{
-			mpv = new NET.Mpv(dllPath);
+			mpv = new NET.Mpv(libMpvPath);
 
 			mpv.PlaybackRestart += MpvOnPlaybackRestart;
 			mpv.Seek += MpvOnSeek;
