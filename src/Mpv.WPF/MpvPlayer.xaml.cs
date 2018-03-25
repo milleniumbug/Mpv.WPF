@@ -235,6 +235,7 @@ namespace Mpv.WPF
 		private void UserControlOnLoaded(object sender, RoutedEventArgs e)
 		{
 			Initialise();
+			Ready?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void Initialise()
@@ -251,8 +252,6 @@ namespace Mpv.WPF
 
 			// Set the host of the mpv player.
 			SetMpvHost();
-
-			Ready?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -518,6 +517,7 @@ namespace Mpv.WPF
 		private void MpvOnEndFile(object sender, MpvEndFileEventArgs e)
 		{
 			IsMediaLoaded = false;
+			isSeeking = false;
 
 			var eventEndFile = e.EventEndFile;
 

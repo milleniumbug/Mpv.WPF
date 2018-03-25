@@ -45,17 +45,6 @@ namespace Mpv.WPF.Example
 			SetupPositionUpdateTimer();
 		}
 
-		private void PlayerOnReady(object sender, EventArgs e)
-		{
-			player.AutoPlay = true;
-
-			player.YouTubeDlVideoQuality = YouTubeDlVideoQuality.MediumHigh;
-			player.EnableYouTubeDl(@"scripts\ytdl_hook.lua");
-
-			player.Load(@"https://www.youtube.com/watch?v=E5ln4uR4TwQ");
-			player.Load(@"https://www.youtube.com/watch?v=SNoK5pyK73c");
-		}
-
 		private void SetupPositionUpdateTimer()
 		{
 			positionUpdateTimer = new DispatcherTimer
@@ -63,6 +52,22 @@ namespace Mpv.WPF.Example
 				Interval = TimeSpan.FromMilliseconds(500)
 			};
 			positionUpdateTimer.Tick += PositionUpdateTimerOnTick;
+		}
+
+		private void PlayerOnReady(object sender, EventArgs e)
+		{
+			SetupPlayer();
+		}
+
+		private void SetupPlayer()
+		{
+			player.AutoPlay = true;
+
+			player.EnableYouTubeDl(@"scripts\ytdl_hook.lua");
+			player.YouTubeDlVideoQuality = YouTubeDlVideoQuality.MediumHigh;
+
+			player.Load(@"https://www.youtube.com/watch?v=E5ln4uR4TwQ");
+			player.Load(@"https://www.youtube.com/watch?v=SNoK5pyK73c");
 		}
 
 		private void PlayerOnMediaLoaded(object sender, EventArgs e)

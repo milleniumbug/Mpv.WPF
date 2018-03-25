@@ -16,6 +16,7 @@
 	with this program; if not, write to the Free Software Foundation, Inc.,
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
 -->
+
 <Window
 	x:Class="Mpv.WPF.Example.MainWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -42,10 +43,9 @@
 
 		<mpvWPF:MpvPlayer
 			x:Name="player"
-			LibMpvPath="lib\\mpv-1.dll"
-			Ready="PlayerOnReady"
 			MediaLoaded="PlayerOnMediaLoaded"
-			MediaUnloaded="PlayerOnMediaUnloaded" />
+			MediaUnloaded="PlayerOnMediaUnloaded"
+			Ready="PlayerOnReady" />
 
 		<Grid
 			Grid.Row="1"
