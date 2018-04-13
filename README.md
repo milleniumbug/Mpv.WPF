@@ -6,7 +6,6 @@ WPF user control to easily play video. Powered by [mpv](https://github.com/mpv-p
 #### Notes:
 
 * This software is not yet ready to be used in a production environment.
-* No documentation has yet been written.
 
 If you encounter any bugs or would like to see a feature added then please open an issue. Contributions are very welcome!
 
@@ -22,23 +21,19 @@ See Mpv<span />.NET documentation [here](https://github.com/hudec117/Mpv.NET#pre
 
 ### User Control
 
-MpvPlayer is the user control that contains the mpv video player. It does not contain any other controls.
+MpvPlayer is the only control in this library.
 
-The MpvPlayer cannot be created declared in XAML since it requires to be instantiated with the path to the libmpv DLL.
+The MpvPlayer can be declared using XAML but setting any properties (e.g. YouTubeDlVideoQuality, Volume) (apart from LibMpvPath) should be done when the `Ready` event is invoked.
 
-To instantiate MpvPlayer:
+To declare the player in XAML:
 
-```csharp
-// Class-scope
-private MpvPlayer player;
-private const string libMpvPath = @"lib\mpv-1.dll";
-
-// Constructor/Initialisation
-player = new MpvPlayer(libMpvPath);
-
-// Add the player as a child to
-// an element.
-playerHost.Children.Add(player);
+```xml
+<mpvWPF:MpvPlayer
+    x:Name="player"
+    LibMpvPath="C:\path\to\mpv-1.dll"
+    MediaLoaded="PlayerOnMediaLoaded"
+    MediaUnloaded="PlayerOnMediaUnloaded"
+    Ready="PlayerOnReady" />
 ```
 
 ### Enabling youtube-dl
