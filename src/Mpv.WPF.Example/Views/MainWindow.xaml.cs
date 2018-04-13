@@ -29,6 +29,8 @@ namespace Mpv.WPF.Example
 	{
 		private readonly MainWindowModel model = new MainWindowModel();
 
+		private MpvPlayer player;
+
 		private DispatcherTimer positionUpdateTimer;
 
 		private bool isMovingPositionSlider = false;
@@ -42,6 +44,8 @@ namespace Mpv.WPF.Example
 		{
 			DataContext = model;
 
+			SetupPlayer();
+
 			SetupPositionUpdateTimer();
 		}
 
@@ -54,20 +58,24 @@ namespace Mpv.WPF.Example
 			positionUpdateTimer.Tick += PositionUpdateTimerOnTick;
 		}
 
-		private void PlayerOnReady(object sender, EventArgs e)
-		{
-			SetupPlayer();
-		}
-
 		private void SetupPlayer()
 		{
-			player.AutoPlay = true;
+			player = new MpvPlayer("lib\\mpv-1.dll")
+			{
+				AutoPlay = true
+			};
+
+			player.MediaLoaded += PlayerOnMediaLoaded;
+			player.MediaUnloaded += PlayerOnMediaUnloaded;
+
 
 			player.EnableYouTubeDl(@"scripts\ytdl_hook.lua");
 			player.YouTubeDlVideoQuality = YouTubeDlVideoQuality.MediumHigh;
 
 			player.Load(@"https://www.youtube.com/watch?v=E5ln4uR4TwQ");
 			player.Load(@"https://www.youtube.com/watch?v=SNoK5pyK73c");
+
+			playerHost.Children.Add(player);
 		}
 
 		private void PlayerOnMediaLoaded(object sender, EventArgs e)

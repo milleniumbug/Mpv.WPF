@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 #endif
 using System.Globalization;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace Mpv.WPF
@@ -15,12 +14,6 @@ namespace Mpv.WPF
 	/// </summary>
 	public partial class MpvPlayer : UserControl
 	{
-		public static readonly DependencyProperty LibMpvPathProperty = DependencyProperty.Register(
-			"LibMpvPath",
-			typeof(string),
-			typeof(MpvPlayer),
-			new PropertyMetadata("lib\\mpv-1.dll"));
-
 		/// <summary>
 		/// An instance of the underlying mpv API. Do not touch unless you know what you're doing.
 		/// </summary>
@@ -29,11 +22,7 @@ namespace Mpv.WPF
 		/// <summary>
 		/// Absolute or relative (to your executable) path to the libmpv DLL.
 		/// </summary>
-		public string LibMpvPath
-		{
-			get => (string)GetValue(LibMpvPathProperty);
-			set => SetValue(LibMpvPathProperty, value);
-		}
+		public string LibMpvPath { get; private set; }
 
 		/// <summary>
 		/// The desired video quality to retrieve when loading streams from video sites.
@@ -194,8 +183,6 @@ namespace Mpv.WPF
 			}
 		}
 
-		public event EventHandler Ready;
-
 		public event EventHandler MediaLoaded;
 		public event EventHandler MediaUnloaded;
 		public event EventHandler MediaError;
@@ -214,14 +201,6 @@ namespace Mpv.WPF
 		private readonly object mpvLock = new object();
 
 		/// <summary>
-		/// Creates an instance of MpvPlayer, loading the DLL pointed to by LibMpvPath.
-		/// </summary>
-		public MpvPlayer()
-		{
-			InitializeComponent();
-		}
-
-		/// <summary>
 		/// Creates an instance of MpvPlayer using a specific libmpv DLL.
 		/// </summary>
 		/// <param name="libMpvPath">Relative or absolute path to the libmpv DLL.</param>
@@ -230,12 +209,8 @@ namespace Mpv.WPF
 			InitializeComponent();
 
 			LibMpvPath = libMpvPath;
-		}
 
-		private void UserControlOnLoaded(object sender, RoutedEventArgs e)
-		{
 			Initialise();
-			Ready?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void Initialise()
