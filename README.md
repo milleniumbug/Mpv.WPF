@@ -23,18 +23,24 @@ See Mpv<span />.NET documentation [here](https://github.com/hudec117/Mpv.NET#pre
 
 MpvPlayer is the only control in this library.
 
-The MpvPlayer can be declared using XAML but setting any properties (e.g. YouTubeDlVideoQuality, Volume) (apart from LibMpvPath) should be done when the `Ready` event is invoked.
+The MpvPlayer cannot be declared in XAML since it needs to be instantiated with the path to the libmpv DLL.
 
-To declare the player in XAML:
+To instantiate MpvPlayer:
 
-```xml
-<mpvWPF:MpvPlayer
-    x:Name="player"
-    LibMpvPath="C:\path\to\mpv-1.dll"
-    MediaLoaded="PlayerOnMediaLoaded"
-    MediaUnloaded="PlayerOnMediaUnloaded"
-    Ready="PlayerOnReady" />
+```csharp
+// Class-scope
+private MpvPlayer player;
+private const string libMpvPath = @"lib\mpv-1.dll";
+
+// Constructor/Initialisation
+player = new MpvPlayer(libMpvPath);
+
+// Add the player as a child to
+// a WPF element. (E.g. grid)
+playerHost.Children.Add(player);
 ```
+
+See [Mpv.WPF.Example](https://github.com/hudec117/Mpv.WPF/tree/master/src/Mpv.WPF.Example) in the source code.
 
 ### Enabling youtube-dl
 
