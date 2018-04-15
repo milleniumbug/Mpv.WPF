@@ -1,6 +1,6 @@
 ﻿namespace Mpv.WPF
 {
-	public enum MpvPlayerLoadMethod
+	public enum LoadMethod
 	{
 		/// <summary>
 		/// Stop playback of current media and start new one.

@@ -1,5 +1,4 @@
 ﻿using Mpv.NET;
-using Mpv.WPF.YouTubeDl;
 using System;
 #if DEBUG
 using System.Diagnostics;
@@ -32,7 +31,7 @@ namespace Mpv.WPF
 			get => ytdlVideoQuality;
 			set
 			{
-				var formatString = YouTubeDlHelper.GetFormatStringForVideoQuality(value);
+				var formatString = YouTubeDlHelperQuality.GetFormatStringForVideoQuality(value);
 
 				lock (mpvLock)
 				{
@@ -261,7 +260,7 @@ namespace Mpv.WPF
 		/// </summary>
 		/// <param name="path">Path or URL to a media file.</param>
 		/// <param name="loadMethod">The way in which the given media file should be loaded.</param>
-		public void Load(string path, MpvPlayerLoadMethod loadMethod = MpvPlayerLoadMethod.AppendPlay)
+		public void Load(string path, LoadMethod loadMethod = LoadMethod.AppendPlay)
 		{
 			Guard.AgainstNullOrEmptyOrWhiteSpaceString(path, nameof(path));
 
@@ -269,8 +268,7 @@ namespace Mpv.WPF
 			{
 				mpv.SetPropertyString("pause", AutoPlay ? "no" : "yes");
 
-				var loadMethodString = GetStringForLoadMethod(loadMethod);
-
+				var loadMethodString = LoadMethodHelper.ToString(loadMethod);
 				mpv.Command("loadfile", path, loadMethodString);
 			}
 		}
@@ -552,21 +550,6 @@ namespace Mpv.WPF
 		{
 			if (!IsMediaLoaded)
 				throw new InvalidOperationException("Operation could not be completed because no media file has been loaded.");
-		}
-
-		private string GetStringForLoadMethod(MpvPlayerLoadMethod loadMethod)
-		{
-			switch (loadMethod)
-			{
-				case MpvPlayerLoadMethod.Replace:
-					return "replace";
-				case MpvPlayerLoadMethod.Append:
-					return "append";
-				case MpvPlayerLoadMethod.AppendPlay:
-					return "append-play";
-				default:
-					throw new ArgumentException("Invalid load method.", nameof(loadMethod));
-			}
 		}
 
 		private static bool HandleCommandMpvException(MpvException exception)

@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace Mpv.WPF.YouTubeDl
+namespace Mpv.WPF
 {
-	internal static class YouTubeDlHelper
+	internal static class YouTubeDlHelperQuality
 	{
 		public static string GetFormatStringForVideoQuality(YouTubeDlVideoQuality videoQuality)
 		{

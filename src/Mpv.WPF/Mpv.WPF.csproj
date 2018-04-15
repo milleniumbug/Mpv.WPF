@@ -58,17 +58,18 @@
     <Compile Include="Guard.cs" />
     <Compile Include="KeepOpen\KeepOpen.cs" />
     <Compile Include="KeepOpen\KeepOpenHelper.cs" />
+    <Compile Include="LoadMethod\LoadMethodHelper.cs" />
     <Compile Include="MpvPlayer.xaml.cs">
       <DependentUpon>MpvPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="MpvPlayerHwndHost.cs" />
-    <Compile Include="MpvPlayerLoadMethod.cs" />
+    <Compile Include="LoadMethod\LoadMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WinFunctions.cs" />
-    <Compile Include="YouTubeDl\YouTubeDlHelper.cs" />
-    <Compile Include="YouTubeDl\YouTubeDlVideoQuality.cs" />
+    <Compile Include="WinInterop.cs" />
+    <Compile Include="YouTubeDlQuality\YouTubeDlQualityHelper.cs" />
+    <Compile Include="YouTubeDlQuality\YouTubeDlQuality.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MpvPlayer.xaml">

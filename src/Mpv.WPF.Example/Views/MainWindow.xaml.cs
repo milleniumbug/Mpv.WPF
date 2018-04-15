@@ -18,7 +18,6 @@
 */
 
 using Mpv.WPF.Example.ViewModels;
-using Mpv.WPF.YouTubeDl;
 using System;
 using System.Windows;
 using System.Windows.Threading;

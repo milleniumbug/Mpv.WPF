@@ -4,9 +4,9 @@ namespace Mpv.WPF
 {
 	internal static class KeepOpenHelper
 	{
-		public static string ToString(KeepOpen value)
+		public static string ToString(KeepOpen keepOpen)
 		{
-			switch (value)
+			switch (keepOpen)
 			{
 				case KeepOpen.Yes:
 					return "yes";
@@ -16,12 +16,12 @@ namespace Mpv.WPF
 					return "always";
 			}
 
-			return null;
+			throw new ArgumentException("Invalid enumeration value.");
 		}
 
-		public static KeepOpen FromString(string stringValue)
+		public static KeepOpen FromString(string keepOpenString)
 		{
-			switch (stringValue)
+			switch (keepOpenString)
 			{
 				case "yes":
 					return KeepOpen.Yes;
