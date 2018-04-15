@@ -62,12 +62,12 @@ namespace Mpv.WPF.Example
 		{
 			player = new MpvPlayer("lib\\mpv-1.dll")
 			{
-				AutoPlay = true
+				AutoPlay = true,
+				KeepOpen = KeepOpen.Always
 			};
 
 			player.MediaLoaded += PlayerOnMediaLoaded;
 			player.MediaUnloaded += PlayerOnMediaUnloaded;
-
 
 			player.EnableYouTubeDl(@"scripts\ytdl_hook.lua");
 			player.YouTubeDlVideoQuality = YouTubeDlVideoQuality.MediumHigh;

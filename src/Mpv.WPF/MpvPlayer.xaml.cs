@@ -72,6 +72,32 @@ namespace Mpv.WPF
 		}
 
 		/// <summary>
+		/// If true, media will not be unloaded when playback finishes. Warning: The MediaUnloaded event will not be raised!
+		/// </summary>
+		public KeepOpen KeepOpen
+		{
+			get
+			{
+				string stringValue;
+				lock (mpvLock)
+				{
+					stringValue = mpv.GetPropertyString("keep-open");
+				}
+
+				return KeepOpenHelper.FromString(stringValue);
+			}
+			set
+			{
+				var stringValue = KeepOpenHelper.ToString(value);
+
+				lock (mpvLock)
+				{
+					mpv.SetPropertyString("keep-open", stringValue);
+				}
+			}
+		}
+
+		/// <summary>
 		/// If true, when media is loaded it will automatically play.
 		/// </summary>
 		public bool AutoPlay { get; set; }

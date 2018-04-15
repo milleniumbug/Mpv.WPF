@@ -56,6 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Guard.cs" />
+    <Compile Include="KeepOpen\KeepOpen.cs" />
+    <Compile Include="KeepOpen\KeepOpenHelper.cs" />
     <Compile Include="MpvPlayer.xaml.cs">
       <DependentUpon>MpvPlayer.xaml</DependentUpon>
     </Compile>
