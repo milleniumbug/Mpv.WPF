@@ -18,7 +18,6 @@
 */
 
 using Mpv.WPF.Example.ViewModels;
-using Mpv.WPF.YouTubeDl;
 using System;
 using System.Windows;
 using System.Windows.Threading;
@@ -67,7 +66,6 @@ namespace Mpv.WPF.Example
 
 			player.MediaLoaded += PlayerOnMediaLoaded;
 			player.MediaUnloaded += PlayerOnMediaUnloaded;
-
 
 			player.EnableYouTubeDl(@"scripts\ytdl_hook.lua");
 			player.YouTubeDlVideoQuality = YouTubeDlVideoQuality.MediumHigh;

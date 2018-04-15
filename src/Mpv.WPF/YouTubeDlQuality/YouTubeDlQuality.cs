@@ -1,4 +1,4 @@
-﻿namespace Mpv.WPF.YouTubeDl
+﻿namespace Mpv.WPF
 {
 	public enum YouTubeDlVideoQuality
 	{
