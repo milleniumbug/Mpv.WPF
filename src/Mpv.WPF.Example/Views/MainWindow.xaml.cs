@@ -61,8 +61,7 @@ namespace Mpv.WPF.Example
 		{
 			player = new MpvPlayer("lib\\mpv-1.dll")
 			{
-				AutoPlay = true,
-				KeepOpen = KeepOpen.Always
+				AutoPlay = true
 			};
 
 			player.MediaLoaded += PlayerOnMediaLoaded;
